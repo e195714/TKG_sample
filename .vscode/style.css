@@ -1,0 +1,115 @@
+td{
+    text-align: center;
+}
+
+table {
+  font-family: "MSゴシック" ;
+  border-collapse: collapse;    
+  border: solid 2px orange;/*表全体を線で囲う*/
+  }
+
+  table th, table td {
+    border: dashed 1px orange;/**/
+    text-align: center;
+    /*破線 1px オレンジ*/
+  }
+
+/* .subtotal_1 th:hover{
+  background-color: #ffd9d2;
+}
+マウスオーバーされたものしか変化しない，
+同じclass全てを変化させる方法わからなかった，
+jsの方からコントロールする． */
+
+.subtotal_1, .subtotal_2, .Total_1, .subtotal_3, .subtotal_4, .Total_2, .all_total{
+  transition: 0.5s;
+}
+
+.always_subtotal_1{
+  background-color: #ffd9d2;
+}
+
+.always_subtotal_2{
+  background-color: #c6f78e;
+}
+
+.always_total_1{
+  background-color: #cbfff4;
+}
+
+.always_subtotal_3{
+  background-color: #cad4f7;
+}
+
+.always_subtotal_4{
+  background-color: #e6ccf5;
+}
+
+.always_total_2{
+  background-color: #faffaf;
+}
+
+.always_alltotal{
+  background-color: #ffea8a;
+}
+
+
+h1 {
+  /* タイトルTLGのCSS */
+  font-family: "MSゴシック" ;
+  text-align: center;
+  background: #ffd98a;
+  padding: 2px 5px 2px 25px;
+  font-size: 30px;
+  color: #474747;
+  border-radius: 100px 100px 10px 10px;
+  color: #ffffff;
+}
+
+.usage{
+  /* 上の使い方説明のcss */
+  text-align: center;
+  margin: 10px 10px;
+}
+
+.txt{
+  /* 入力してもらうinputのCSS */
+  width: 50%;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+}
+
+.category{
+  font-size: 20px;
+  /* 共通教育，専門教育，とかのカテゴリー？のCSS */
+  text-align: left;
+  background-color: #ffd98a;
+}
+
+.GoogleForm{
+  text-align: center;
+  margin-top: 100px;
+  margin-bottom: 100px;
+  background-color: rgb(255, 251, 218);
+}
+
+input:invalid{
+  border: solid 1px red;
+}
+
+.warning{
+  color: red;
+}
+
+.success{
+  color:rgb(18, 209, 43)
+}
+
+.image-vw {
+  width: 100%; 
+  max-width: 700px;
+}
+.SubjectClassificationImage {
+  text-align: center;
+}
