@@ -27,16 +27,33 @@
             </svg>
             )のあるところを押すと、合計に含まれるものがハイライトされます。
         </p>
-
         <label class="select-label">
-            <select id="select_term" onchange="TableChange();">
+            <select id="select_admission_year" class="select_condition" onchange="all_calc();">
+                <option hidden>入学年度を選択</option>
+                <option value="value0">2018</option>
+                <option value="value1">2019</option>
+                <option value="value0">2020</option>
+                <option value="value1">2021</option>
+            </select>
+        </label>
+        <label class="select-label">
+            <select id="select_grade" class="select_condition" onchange="all_calc();">
+                <option hidden>学年を選択</option>
+                <option value="value0">１年</option>
+                <option value="value1">２年</option>
+                <option value="value0">３年</option>
+                <option value="value1">４年</option>
+            </select>
+        </label>
+        <label class="select-label">
+            <select id="select_term" class="select_condition" onchange="all_calc();">
+                <option hidden>学期を選択</option>
                 <option value="value0">前期</option>
                 <option value="value1">後期</option>
             </select>
         </label>
         
         <br><br>
-
         <!-- <p>例</p>
         
             <table align="center" border="1" class="mb-5">
@@ -603,31 +620,81 @@
                 </tr>
 <!--____________________________________________________________-->
             </table>
-        <div>
-            <h2 align="center">3年前期の必須単位</h2>
+        <div align="center" id="Compulsory"><!-- ３年前期の必修 -->
+            <h2>3年前期の必須単位</h2>
             <ul class="ul-align-center">
                 <li>知能情報実験III</li>
                 <li>キャリアデザイン</li>
             </ul>
         </div>
-        
+        <div align="center" id="2nd_Compulsory"><!-- ３年後期の必修 -->
+            <h2>3年後期の必須単位</h2>
+            <ul class="ul-align-center">
+                <li>エンジニアリングデザイン演習</li>
+            </ul>
+        </div>
         <div class="SubjectClassificationImage">
             <img src="images/specialized_subject_classification_image.png" alt="専門科目分類表" title="専門科目分類表" class="image-vw">
         </div>
 
         <br /> 
-        <div class="req_lab" align="center"><!-- 研究室配属条件 -->
+        <div class="req_lab" align="center" id="req_lab_y18"><!-- y18研究室配属条件 -->
             <h2>研究室配属条件</h2>
             <label class="check_lb">
-                <input type="checkbox" id="more90Checkbox"> 取得単位数が90以上である
+                <input type="checkbox" id="more90Checkbox_y18"> 取得単位数が90以上である
             </label>
             <label class="check_lb">
-                <input type="checkbox" id="more110Checkbox"> 取得単位数と登録単位数の合計が110以上である
+                <input type="checkbox" id="more110Checkbox_y18"> 取得単位数と登録単位数の合計が110以上である
             </label>
             <label class="check_lb">
-                <input type="checkbox" id="takeAllCheckbox"> ３年次後期までの専門必修科目の全ての単位を取得または登録している
+                <input type="checkbox" id="takeAllCheckbox_y18"> ３年次後期までの専門必修科目の全ての単位を取得または登録している
             </label>
-            <p class="check_lb" id="result_lab_req"></p>
+            <p class="check_lb" id="result_lab_req_y18"></p>
+        </div>
+        
+        <br /> 
+        <div class="req_lab" align="center" id="req_lab_y19"><!-- y19研究室配属条件 -->
+            <h2>研究室配属条件</h2>
+            <label class="check_lb">
+                <input type="checkbox" id="more90Checkbox_y19"> 取得単位数が90以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="more110Checkbox_y19"> 取得単位数と登録単位数の合計が110以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="takeAllCheckbox_y19"> ３年次後期までの専門必修科目の全ての単位を取得または登録している
+            </label>
+            <p class="check_lb" id="result_lab_req_y19"></p>
+        </div>
+
+        <br /> 
+        <div class="req_lab" align="center" id="req_lab_y20"><!-- y20研究室配属条件 -->
+            <h2>研究室配属条件</h2>
+            <label class="check_lb">
+                <input type="checkbox" id="more90Checkbox_y20"> 取得単位数が90以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="more110Checkbox_y20"> 取得単位数と登録単位数の合計が110以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="takeAllCheckbox_y20"> ３年次後期までの専門必修科目の全ての単位を取得または登録している
+            </label>
+            <p class="check_lb" id="result_lab_req_y20"></p>
+        </div>
+
+        <br /> 
+        <div class="req_lab" align="center" id=req_lab_y21><!-- y21研究室配属条件 -->
+            <h2>研究室配属条件</h2>
+            <label class="check_lb">
+                <input type="checkbox" id="more90Checkbox_y21"> 取得単位数が80以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="more110Checkbox_y21"> 取得単位数と登録単位数の合計が100以上である
+            </label>
+            <label class="check_lb">
+                <input type="checkbox" id="takeAllCheckbox_y21"> ３年次後期までの専門必修科目の全ての単位を取得または登録している
+            </label>
+            <p class="check_lb" id="result_lab_req_y21"></p>
         </div>
 
         <div class="GoogleForm">
