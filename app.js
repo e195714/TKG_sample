@@ -9,212 +9,90 @@ let fusion_judge = false; // 工学融合を4単位取得したか．
 // 同じ科目群から取得しているかの判定はまだできていない(10/21)
 // 全てのinputにつけられたidのリスト
 const idList = ["health","jinbun","syakai","sougou","career","ryudai","Japanese","sizen","info","English","German","French","Spanish","Chinese","etc","major_base","out_major_base","info_tec","ex","experiment","math_base","core","fusion","math_base_select","adv","relation","common_engineering","free","teacher"];
+//pdfで取得するリスト(上のidListと同期しなければならない)
+const pdfIdList = ["健康運動","人文","社会","総合","キャリア関係","琉大特色・地域創生","日本語・日本語事情","自然","情報関係","英語","ドイツ語","フランス語","スペイン語","中国語","その他","専門基礎","専門基礎指定外","情報技術","総合力演習","研究実験","数学基礎","知能情報コア","工学融合（選択）","数学基礎（選択）","知能情報アドバンスト","知能情報関連","選択（工学共通）","自由","教職"]
 // 表下の前期後期の必修科目につけられたidのリスト
-const compulsoryIdList = ['first_year_Compulsory','first_year_2nd_Compulsory','second_year_Compulsory','second_year_2nd_Compulsory','third_year_Compulsory','third_year_2nd_Compulsory','fourth_year_Compulsory','fourth_year_2nd_Compulsory']
+                        
+const compulsoryIdList = ['first_year_Compulsory','first_year_2nd_Compulsory','second_year_Compulsory','second_year_2nd_Compulsory','third_year_Compulsory','third_year_2nd_Compulsory','fourth_year_Compulsory','fourth_year_2nd_Compulsory','y21_first_year_Compulsory','y21_first_year_2nd_Compulsory','y21_second_year_Compulsory','y21_second_year_2nd_Compulsory','y21_third_year_Compulsory','y21_third_year_2nd_Compulsory','y21_fourth_year_Compulsory','y21_fourth_year_2nd_Compulsory']
+
+const highLightObjects = //イベントリスナー追加対象のid,ハイライトの対象のクラス名,ハイライトクラス
+[
+    [
+        "high_light_subtotal1",
+        "subtotal1",
+        "subtotal1_bgcolor"
+    ],
+    [
+        "high_light_subtotal2",
+        "subtotal2",
+        "subtotal2_bgcolor"
+    ],
+    [
+        "high_light_subtotal3",
+        "subtotal3",
+        "subtotal3_bgcolor"
+    ],
+    [
+        "high_light_subtotal4",
+        "subtotal4",
+        "subtotal4_bgcolor"
+    ],
+    [
+        "high_light_total1",
+        "total1",
+        "total1_bgcolor"
+    ],
+    [
+        "high_light_total2",
+        "total2",
+        "total2_bgcolor"
+    ],
+    [
+        "high_light_all_total",
+        "all_total",
+        "all_total_bgcolor"
+    ]
+]
+
+const DEBUG = true;//コンソール出力をするか否か
+
+const log = (log) => {
+    if(DEBUG==true){
+        console.log(log);
+    }
+}
 
 //ロード時に実行
 window.onload = () =>{
-    setValue(); // 値の復元
+    log("on load");
+    addHithLightEventListeners(highLightObjects);
+    setValue(JSON.parse(localStorage.getItem("TKG"))); // 値の復元
     all_calc(); // 初期化，前回の入力が復元された場合はその計算結果を出力．
 }
 
-// ＿＿＿＿＿＿＿＿＿＿小計1のハイライト↓↓
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let subtotal_1 = document.getElementsByClassName("subtotal_1");
-    console.log(subtotal_1);
+const addHithLightEventListeners = (obj) =>{
+    log("add high light enent listeners");
+    for(let i=0;i<obj.length;i++){
+        target = obj[i];
+        addHighLightEventListner(target[0],target[1],target[2]);
+    }
+}
 
-    //マウスポインターが乗ったタイミングで背景色を変更
-    subtotal_1[5].addEventListener('mouseover', function() {
-        // 5個目(一番最後)が，小計1の欄
-        // console.log("小計1マウスオーバー")
-        let subtotal1_count = 0;
-        while(subtotal1_count < subtotal_1.length){
-            subtotal_1[subtotal1_count].style.backgroundColor = '#ffd9d2';
-            subtotal1_count++;
+const addHighLightEventListner = (id,className,highLightColor) => {//イベントリスナー追加対象のid,ハイライトの対象のクラス名,ハイライトクラス
+    log("add high light event listener"+": "+id+", "+className+", "+highLightColor);
+    const targetElement = document.getElementById(id);
+    const HightLightElements = document.getElementsByClassName(className);
+    targetElement.addEventListener('mouseover', () => {
+        for(let i=0;i<HightLightElements.length;i++){
+            HightLightElements[i].classList.add(highLightColor);
         }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    subtotal_1[5].addEventListener('mouseout', function() {
-        let subtotal1_count = 0;
-        while(subtotal1_count < subtotal_1.length){
-            subtotal_1[subtotal1_count].style.backgroundColor = '';
-            subtotal1_count++;
+    },false);
+    targetElement.addEventListener('mouseout',() => {
+        for(let i=0;i<HightLightElements.length;i++){
+            HightLightElements[i].classList.remove(highLightColor);
         }
-    }, false)
-},false)
-
-
-// ＿＿＿＿＿＿＿＿＿＿小計2のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let subtotal_2 = document.getElementsByClassName("subtotal_2");
-    console.log(subtotal_2);
-    
-    //マウスポインターが乗ったタイミングで背景色を変更
-    subtotal_2[6].addEventListener('mouseover', function() {
-        // 6個目(一番最後)が，小計2の欄
-        let subtotal2_count = 0;
-        while(subtotal2_count < subtotal_2.length){
-            subtotal_2[subtotal2_count].style.backgroundColor = '#c6f78e';
-            subtotal2_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    subtotal_2[6].addEventListener('mouseout', function() {
-        let subtotal2_count = 0;
-        while(subtotal2_count < subtotal_2.length){
-            subtotal_2[subtotal2_count].style.backgroundColor = '';
-            subtotal2_count++;
-        }
-    }, false)
-},false)
-
-// ＿＿＿＿＿＿＿＿＿＿共通計のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let Total_1 = document.getElementsByClassName("Total_1");
-    console.log(Total_1);
-
-    //マウスポインターが乗ったタイミングで背景色を変更
-    Total_1[14].addEventListener('mouseover', function() {
-        // 14個目(一番最後)が，共通計の欄
-        let Total_1_count = 0;
-        while(Total_1_count < Total_1.length){
-            Total_1[Total_1_count].style.backgroundColor = '#cbfff4';
-            Total_1_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    Total_1[14].addEventListener('mouseout', function() {
-        let Total_1_count = 0;
-        while(Total_1_count < Total_1.length){
-            Total_1[Total_1_count].style.backgroundColor = '';
-            Total_1_count++;
-        }
-    }, false)
-},false)
-
-// ＿＿＿＿＿＿＿＿＿＿数情計のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let subtotal_3 = document.getElementsByClassName("subtotal_3");
-    console.log(subtotal_3);
-    
-    //マウスポインターが乗ったタイミングで背景色を変更
-    subtotal_3[3].addEventListener('mouseover', function() {
-        // 3個目(一番最後)が，数情計の欄
-        let subtotal3_count = 0;
-        while(subtotal3_count < subtotal_3.length){
-            subtotal_3[subtotal3_count].style.backgroundColor = '#cad4f7';
-            subtotal3_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    subtotal_3[3].addEventListener('mouseout', function() {
-        let subtotal3_count = 0;
-        while(subtotal3_count < subtotal_3.length){
-            subtotal_3[subtotal3_count].style.backgroundColor = '';
-            subtotal3_count++;
-        }
-    }, false)
-},false)
-
-// ＿＿＿＿＿＿＿＿＿＿数情等計のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let subtotal_4 = document.getElementsByClassName("subtotal_4");
-    console.log(subtotal_4);
-
-    //マウスポインターが乗ったタイミングで背景色を変更
-    subtotal_4[7].addEventListener('mouseover', function() {
-        // 7個目(一番最後)が，数情等計の欄
-        let subtotal4_count = 0;
-        while(subtotal4_count < subtotal_4.length){
-            subtotal_4[subtotal4_count].style.backgroundColor = '#e6ccf5';
-            subtotal4_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    subtotal_4[7].addEventListener('mouseout', function() {
-        let subtotal4_count = 0;
-        while(subtotal4_count < subtotal_4.length){
-            subtotal_4[subtotal4_count].style.backgroundColor = '';
-            subtotal4_count++;
-        }
-    }, false)
-},false)
-
-
-// ＿＿＿＿＿＿＿＿＿＿専門計のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let Total_2 = document.getElementsByClassName("Total_2");
-    console.log(Total_2);
-
-    //マウスポインターが乗ったタイミングで背景色を変更
-    Total_2[12].addEventListener('mouseover', function() {
-        // 12個目(一番最後)が，専門計の欄
-        let Total_2_count = 0;
-        while(Total_2_count < Total_2.length){
-            Total_2[Total_2_count].style.backgroundColor = '#faffaf';
-            Total_2_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    Total_2[12].addEventListener('mouseout', function() {
-        let Total_2_count = 0;
-        while(Total_2_count < Total_2.length){
-            Total_2[Total_2_count].style.backgroundColor = '';
-            Total_2_count++;
-        }
-    }, false)
-},false)
-
-// ＿＿＿＿＿＿＿＿＿＿最後の合計のハイライト↓↓
-
-document.addEventListener('DOMContentLoaded', function() {
-    // DOMContentLoaded = HTMLが読み込まれた時，functionを実行
-    let all_total = document.getElementsByClassName("all_total");
-    console.log(all_total);
-
-    //マウスポインターが乗ったタイミングで背景色を変更
-    all_total[3].addEventListener('mouseover', function() {
-        // 3個目(一番最後)が，合計の欄
-        let all_total_count = 0;
-        while(all_total_count < all_total.length){
-            all_total[all_total_count].style.backgroundColor = '#ffea8a';
-            all_total_count++;
-        }
-    }, false)
-    // getElementsByClassNameで同じクラス名のタグの配列を取り，その配列の中身ひとつひとつにbackgroundの処理を行なっていくという方法で，全部塗る
-    
-    // マウスポインターが外れたタイミングで背景色を戻す
-    all_total[3].addEventListener('mouseout', function() {
-        let all_total_count = 0;
-        while(all_total_count < all_total.length){
-            all_total[all_total_count].style.backgroundColor = '';
-            all_total_count++;
-        }
-    }, false)
-},false)
+    },false);
+};
 
 function convertNum(n){
     n = n || '0';//NaNを0にする。
@@ -320,7 +198,7 @@ const foreign_calc = ()=>{
         // 合計で4ではなく，一つの言語を4単位以上あるかを確かめる
         second_foreign_judge = true; // 第二言語の条件を満たした．
         document.getElementById('result_second').textContent = 0;
-        console.log("第二言語満たした")
+        log("第二言語満たした")
     }else{
         if (sum_second >= 4){
             // 一つの科目群から4単位以上でなかったとしても，とりあえずマイナスにならないように合計が4超えた時も0とする
@@ -335,17 +213,15 @@ const foreign_calc = ()=>{
     document.getElementById('foreignTotal').textContent=foreignTotal;
     document.getElementById('result_foreignTotal').textContent=Math.max(12-foreignTotal,0);
     
-    console.log(English);
-    console.log(second_foreign_judge);
     // foreignTotalが英語12か英語8と外国語4かどうか出力する
     if(foreignTotal >= 12){
         if(English >= 12){
             document.getElementById('result_foreignTotal').innerHTML = "0 <span class='success'><br> 英語12単位で満たされています，</span>";
-            console.log("英語12");
+            log("英語12");
         }else if(English >= 8 && second_foreign_judge == true){
         // 英語8単位以上かつ，第二言語1つを4単位以上とっているならば
             document.getElementById('result_foreignTotal').innerHTML = "0 <span class='success'><br> 英語8単位，第二言語4単位で満たされています．</span>"
-            console.log("英語8と第二言語4")
+            log("英語8と第二言語4")
         }else{
             document.getElementById('result_foreignTotal').innerHTML = "0 <span class='warning'><br> 言語の取得条件を満たしていません．</span>"
             
@@ -381,13 +257,11 @@ const total1_calc = () => {
     document.getElementById('total1').textContent=total1;
     
     if (total1 >= 30){
-        console.log(`ヘルス${document.getElementById('result_health').textContent} ,小計2${document.getElementById('result_subtotal2').textContent}, 情報${document.getElementById('result_info').textContent}, 外国語計${document.getElementById('result_foreignTotal').textContent}`)
         if(Math.max(2-health,0) == 0 && Math.max(14-subTotal2,0) == 0 && Math.max(2-info,0) == 0 && Math.max(12-foreignTotal,0) == 0 && subtotal2_judge == true && English >= 8 && second_foreign_judge == true){
             // 注意文とか追加したから document.getElementById == 0の比較はできなくなってしまった
             // 2 + 14 + 2 + 12 = 30 で条件を満たしているならば，
             document.getElementById('result_total1').innerHTML = "0 <span class='success'><br> 30単位の条件を満たしています</span>"
-            console.log("共通30満たした．")
-            console.log(second_foreign_judge)
+            log("共通30満たした．")
         }else if(Math.max(2-health,0) != 0){
             // 30単位は満たしたが，健康運動を取得していない
             document.getElementById('result_total1').innerHTML = "0 <span class='warning'><br>健康運動を2単位以上取得する必要があります．</span>"
@@ -420,7 +294,7 @@ const total1_calc = () => {
         }else{
             document.getElementById('result_total1').innerHTML = "0 <span class='warning'><br>上の各条件を確認してください．</span>"
             // マイナスにならないよう取得単位が30を超えたら0にしておくが，条件を満たせていないという注意を表示
-            console.log("共通30の条件に合っていない")
+            log("共通30の条件に合っていない")
         }
     }else{
         document.getElementById('result_total1').innerHTML = ""
@@ -593,13 +467,12 @@ const total2_calc = () => {
 }
 
 
-const next_input = (id) => {
+const nextInput = (id) => {
     // エンターキーで次のテキストボックスへ飛ばす処理
     if( window.event.keyCode == 13 ){        // 13は0x0d(CRキー)
         // window.alert('エンター押された')
         document.getElementById(id).focus();
     }
-    
 }
 
 // 研究室配属条件を満たしているかを示すメッセージ部分＿＿＿＿＿＿＿＿＿＿
@@ -635,16 +508,17 @@ function valueChange(event){
 
 // セレクトボックスの値の変化によって表示を変更する関数をまとめて発火するための関数
 const ChangeBySelect = () =>{
-    hidingCompulsorySubjects(); // まず表下の必修科目は全部非表示に．
     TableChangeReqLab();
     admissionYearTableChange();
     TableChangeSubjectClassificationImage();
+    TableChangeCourseModel();
 }
 
 const admissionYearTableChange = () =>{
     // 入学年度選択による分岐
     const element = document.getElementById('select_admission_year');
     const options = element.options;
+    hidingCompulsorySubjects(); // 表下の必修科目は全部非表示に．
     if(options[1].selected == true){
         // 2018年度入学
         befor2021ChengeGraduationReq();
@@ -659,6 +533,7 @@ const admissionYearTableChange = () =>{
         before2021GradeTableChange();
     }else if(options[4].selected == true){
         // 2021年度入学
+        log("2021年度以降入学に対する処理")
         onAndAfter2021ChengeGraduationReq();
         onAndAfter2021GradeTableChange();
     }
@@ -676,7 +551,7 @@ const befor2021ChengeGraduationReq = () =>{
     document.getElementById('result_exp').innerHTML=`${Math.max(15-experiment,0)}`
     // 数情等計
     document.getElementById('req_sub_total4').innerHTML = "36";
-    const sub_total4 = convertNum(document.getElementById('sub_total4').value);
+    const sub_total4 = convertNum(document.getElementById('sub_total4').textContent);
     document.getElementById('result_sub_total4').innerHTML=`${Math.max(36-sub_total4,0)}`
 }
 
@@ -692,7 +567,7 @@ const onAndAfter2021ChengeGraduationReq = () =>{
     document.getElementById('result_exp').innerHTML=`${Math.max(16-experiment,0)}`
     // 数情等計
     document.getElementById('req_sub_total4').innerHTML = "37";
-    const sub_total4 = convertNum(document.getElementById('sub_total4').value);
+    const sub_total4 = convertNum(document.getElementById('sub_total4').textContent);
     document.getElementById('result_sub_total4').innerHTML=`${Math.max(37-sub_total4,0)}`
 }
 
@@ -726,15 +601,19 @@ const onAndAfter2021GradeTableChange = () =>{
     if(options[1].selected == true){
         // 1年
         onAndAfter2021FirstTableChange();
+        onAndAfter2021DisplayedFirstCompulsorySubjects();
     }else if(options[2].selected == true){
         // 2年
         onAndAfter2021SecondTableChange();
+        onAndAfter2021DisplayedSecondCompulsorySubjects();
     }else if(options[3].selected == true){
         // 3年
         onAndAfter2021ThirdTableChange();
+        onAndAfter2021DisplayedThirdCompulsorySubjects();
     }else if(options[4].selected == true){
         // 4年
         onAndAfter2021FourthTableChange();
+        onAndAfter2021DisplayedFourthCompulsorySubjects();
     }
 } 
 
@@ -973,7 +852,6 @@ const befor2021ThirdTableChange = () =>{
         // 情報技術
         document.getElementById('result_info_tec').innerHTML=`${Math.max(2-info_tec,0)}`
 
-
     }
 }
 
@@ -1077,7 +955,6 @@ const onAndAfter2021FirstTableChange = () =>{
         const major_base = convertNum(document.getElementById('major_base').value);
         // 専門基礎 変更済み
         document.getElementById('result_major_base').innerHTML=`${Math.max(6-major_base,0)}<span class='warning'>(6)</span>`
-
         const info_tec = convertNum(document.getElementById('info_tec').value);
         // 情報技術
         document.getElementById('result_info_tec').innerHTML=`${Math.max(2-info_tec,0)}<span class='warning'>(2)</span>`
@@ -1376,7 +1253,10 @@ const hidingCompulsorySubjects = () => {
     // 表下の必修科目を"全て"非表示にする関数
     for(let i=0;i<compulsoryIdList.length;i++){
         id = compulsoryIdList[i]
-        document.getElementById(id).style.display = 'none';
+        if(document.getElementById(id).style.display != 'none'){
+            // noneでないものをnoneに
+            document.getElementById(id).style.display = 'none';
+        }
     }
 }
 
@@ -1384,16 +1264,23 @@ const before2021DisplayedFirstCompulsorySubjects = () =>{
     // 一年次の必修科目を表下に表示する関数
     let Compulsory_element = document.getElementById('first_year_Compulsory');    
     let Second_Compulsory_element = document.getElementById('first_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
     const element = document.getElementById('select_term')
     // セレクト要素を全部elementに格納
     const options = element.options;
     // その中のoptions要素だけを取ってくる
     // options[1]が前期 [2]が後期を指す
+
     if(options[1].selected == true){
         // 前期
         Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
     }else if(options[2].selected == true){
         // 後期
+        Compulsory_element.style.display = 'none';
         Second_Compulsory_element.style.display = 'block';
     }
 }
@@ -1402,16 +1289,23 @@ const befor2021DisplayedSecondCompulsorySubjects = () =>{
     // 二年次の必修科目を表下に表示する関数
     let Compulsory_element = document.getElementById('second_year_Compulsory');    
     let Second_Compulsory_element = document.getElementById('second_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
     const element = document.getElementById('select_term')
     // セレクト要素を全部elementに格納
     const options = element.options;
     // その中のoptions要素だけを取ってくる
     // options[1]が前期 [2]が後期を指す
+
     if(options[1].selected == true){
         // 前期
         Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
     }else if(options[2].selected == true){
         // 後期
+        Compulsory_element.style.display = 'none';
         Second_Compulsory_element.style.display = 'block';
     }
 }
@@ -1420,16 +1314,23 @@ const befor2021DisplayedThirdCompulsorySubjects = () =>{
     // 三年次の必修科目を表下に表示する関数
     let Compulsory_element = document.getElementById('third_year_Compulsory');    
     let Second_Compulsory_element = document.getElementById('third_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
     const element = document.getElementById('select_term')
     // セレクト要素を全部elementに格納
     const options = element.options;
     // その中のoptions要素だけを取ってくる
     // options[1]が前期 [2]が後期を指す
+
     if(options[1].selected == true){
         // 前期
         Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
     }else if(options[2].selected == true){
         // 後期
+        Compulsory_element.style.display = 'none';
         Second_Compulsory_element.style.display = 'block';
     }
 }
@@ -1438,44 +1339,178 @@ const befor2021DisplayedFourthCompulsorySubjects = () =>{
     // 四年次の必修科目を表下に表示する関数
     let Compulsory_element = document.getElementById('fourth_year_Compulsory');    
     let Second_Compulsory_element = document.getElementById('fourth_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
     const element = document.getElementById('select_term')
     // セレクト要素を全部elementに格納
     const options = element.options;
     // その中のoptions要素だけを取ってくる
     // options[1]が前期 [2]が後期を指す
+
     if(options[1].selected == true){
         // 前期
         Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
     }else if(options[2].selected == true){
         // 後期
+        Compulsory_element.style.display = 'none';
         Second_Compulsory_element.style.display = 'block';
     }
 }
 
+const onAndAfter2021DisplayedFirstCompulsorySubjects = () =>{
+    // y21以降入学の1年次の必修科目を表下に表示する関数
+    let Compulsory_element = document.getElementById('y21_first_year_Compulsory');    
+    let Second_Compulsory_element = document.getElementById('y21_first_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
+    const element = document.getElementById('select_term')
+    // セレクト要素を全部elementに格納
+    const options = element.options;
+    // その中のoptions要素だけを取ってくる
+    // options[1]が前期 [2]が後期を指す
+
+    if(options[1].selected == true){
+        // 前期
+        Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
+    }else if(options[2].selected == true){
+        // 後期
+        Compulsory_element.style.display = 'none';
+        Second_Compulsory_element.style.display = 'block';
+    }
+}
+
+const onAndAfter2021DisplayedSecondCompulsorySubjects = () =>{
+    // y21以降入学の1年次の必修科目を表下に表示する関数
+    let Compulsory_element = document.getElementById('y21_second_year_Compulsory');    
+    let Second_Compulsory_element = document.getElementById('y21_second_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
+    const element = document.getElementById('select_term')
+    // セレクト要素を全部elementに格納
+    const options = element.options;
+    // その中のoptions要素だけを取ってくる
+    // options[1]が前期 [2]が後期を指す
+
+    if(options[1].selected == true){
+        // 前期
+        Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
+    }else if(options[2].selected == true){
+        // 後期
+        Compulsory_element.style.display = 'none';
+        Second_Compulsory_element.style.display = 'block';
+    }
+}
+
+
+const onAndAfter2021DisplayedThirdCompulsorySubjects = () =>{
+    // y21以降入学の1年次の必修科目を表下に表示する関数
+    let Compulsory_element = document.getElementById('y21_third_year_Compulsory');    
+    let Second_Compulsory_element = document.getElementById('y21_third_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
+    const element = document.getElementById('select_term')
+    // セレクト要素を全部elementに格納
+    const options = element.options;
+    // その中のoptions要素だけを取ってくる
+    // options[1]が前期 [2]が後期を指す
+
+    if(options[1].selected == true){
+        // 前期
+        Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
+    }else if(options[2].selected == true){
+        // 後期
+        Compulsory_element.style.display = 'none';
+        Second_Compulsory_element.style.display = 'block';
+    }
+}
+
+const onAndAfter2021DisplayedFourthCompulsorySubjects = () =>{
+    // y21以降入学の1年次の必修科目を表下に表示する関数
+    let Compulsory_element = document.getElementById('y21_fourth_year_Compulsory');    
+    let Second_Compulsory_element = document.getElementById('y21_fourth_year_2nd_Compulsory');
+    
+    Compulsory_element.style.display = 'block';
+    Second_Compulsory_element.style.display = 'block';
+    // 前期後期未選択時には前期後期の必修科目どちらも表示するように
+    const element = document.getElementById('select_term')
+    // セレクト要素を全部elementに格納
+    const options = element.options;
+    // その中のoptions要素だけを取ってくる
+    // options[1]が前期 [2]が後期を指す
+
+    if(options[1].selected == true){
+        // 前期
+        Compulsory_element.style.display = 'block';
+        Second_Compulsory_element.style.display = 'none';
+    }else if(options[2].selected == true){
+        // 後期
+        Compulsory_element.style.display = 'none';
+        Second_Compulsory_element.style.display = 'block';
+    }
+}
+
+const deleteValue = () =>{
+    localStorage.clear();
+    // localStorageの値を全削除
+    location.reload();
+    // ページを再読み込みし，入学年度選択画面へ
+}
 const saveValue = () =>{
     json = generateJson();
     localStorage.setItem("TKG",JSON.stringify(json));
-    console.log("saveValue");
+    log("saveValue");
 }
 
-const setValue = () =>{
-    json = JSON.parse(localStorage.getItem("TKG"));
-    console.log(json)
-    for(let i=0;i<idList.length;i++){
-        id=idList[i]
-        document.getElementById(id).value=json[id]
+const setValue = (json) =>{
+    log("setValue");
+    // log(json == null)
+    if(json != null){
+        for(let i=0;i<idList.length;i++){
+            id=idList[i]
+            document.getElementById(id).value=json[id]
+        }
+        const options = document.getElementById("select_admission_year").options;
+        if(options[json["admission_year"]] != undefined){
+            options[json["admission_year"]].selected = true;//入学年度の復元
+            // 値を削除した後，pdfを読み込もうとすると，このadmission_yearでエラー起きます．
+            // setValuesFromPdfObject でadmission_year抜きの科目群だけのobjが引数で渡されるから，
+            // undefinedになる．だからadmission_yearがないときは
+            document.getElementById("select_admission_year").onchange();
+        }
     }
-    console.log("setValue");
 }
 
 const generateJson = () =>{
     obj={}
+    //入学年度の追加
+    const options = document.getElementById("select_admission_year").options;
+    console.log(options.length);
+    for(let i=0;i<options.length;i++){
+        log(options[i])
+        if(options[i].selected==true){
+            obj["admission_year"] = i;
+            log(`選択された学年の番号(admission_year)は${obj["admission_year"]}`)
+        }
+    }
+    //単位要素の追加
     for(let i=0;i<idList.length;i++){
         id=idList[i]
         value=document.getElementById(id).value
         obj[id] = value;
     }
-    return obj
+    return obj;
 }
 
 const TableChangeReqLab = () =>{
@@ -1523,3 +1558,135 @@ const TableChangeSubjectClassificationImage = () =>{
         y21_subject_classification_image_element.style.display = 'block';
     }
 }
+
+const PDFWIDTHMIN = 100;
+const PDFWIDTHMAX = 118;
+
+const setValuesFromPdfObject = (textContent) => {
+    /*
+    pdfObject has page objects
+    page object has textContent() 
+    textContent return has items and styles
+    pdfobject.items is object array
+    theobject has str, transform[], etc...  
+    */
+    const objectArray = textContent.items
+    let target = 0;
+    obj={}
+    for (let i=0;i<objectArray.length;i++){
+        let baseObject = objectArray[i];
+        if(baseObject.str==pdfIdList[target]){//スタートを探す
+            log("match:"+baseObject.str);
+            const basePos = baseObject.transform.slice(4);
+            let value = 0;
+            for(let j = i+1;j<objectArray.length;j++){
+                const targetObject = objectArray[j];
+                const targetPos = targetObject.transform.slice(4);
+                /*
+                545.4788          :左側の科目名
+                628.2959 82.8171  :必修単位
+                662.3119 116.8331 :取得単位
+                667.8221 122.3433 :右側の科目名
+                */
+
+                const posDiff = targetPos[0]-basePos[0];
+                if(Math.abs(basePos[1]-targetPos[1])<4){
+                    if(PDFWIDTHMAX>posDiff&&posDiff>PDFWIDTHMIN){
+                        value = targetObject.str
+                        break;
+                    }
+                }
+            }
+            //keyとvalueがそろう。
+            obj[idList[target]] = value;
+            target++;
+        }
+    }
+    setValue(obj);
+    all_calc();
+}
+              
+document.getElementById("pdfInput").onchange = function(event) {
+
+    let file = event.target.files[0];
+    let fileReader = new FileReader();  
+
+    fileReader.onload = function() {
+
+        let typedarray = new Uint8Array(this.result);
+
+        const loadingTask = pdfjsLib.getDocument(typedarray);
+        loadingTask.promise.then(pdf => {
+            log("pdf loaded");
+            pdf.getPage(1).then(page =>{
+                log("page loaded");
+                page.getTextContent().then(textContent =>{
+                    setValuesFromPdfObject(textContent);
+                });
+            });
+        });
+    };
+    fileReader.readAsArrayBuffer(file);
+}
+
+const DisplayTable = () =>{
+    // let below_the_select = document.getElementById("below_the_select")
+    // below_the_select.display = 'block';
+ 
+    // let table_below_the_select = document.getElementById("table_below_the_select")
+    // table_below_the_select.style.display = 'table-row';
+    // // 年次選択以外のドロップダウンを表示↓↓
+    let below_the_select = document.getElementById("below_the_select");
+    //below_the_select.style.opacity = 1;
+    below_the_select.style.display = "";
+    let aboveTheTableElement = document.getElementById("Above_the_table");
+    aboveTheTableElement.style.display = "none";
+    log("DisplayTable()");
+    /*
+    // Tableを表示↓↓
+    let tableElement = document.querySelector('table');
+    // querySelector()指定されたセレクターまたはセレクターのグループに一致する
+    // 文書内の最初の Elementを返す
+    tableElement.className -= 'd-none';
+    // // 全部消しているd-noneクラスを取ることでいろいろ表示させる
+
+    // 年次選択のドロップダウンを削除↓↓
+    let aboveTheTableElement = document.querySelector('#Above_the_table');
+    aboveTheTableElement.className += 'd-none';
+    */
+    
+}
+
+const TableChangeCourseModel = () =>{
+    // 履修モデルの切り替え
+    let element_admission_year = document.getElementById('select_admission_year')
+    let options_admission_year = element_admission_year.options;
+
+    let course_model_y18_element = document.getElementById('course_model_y18')
+    let course_model_y19_element = document.getElementById('course_model_y19')
+    let course_model_y20_element = document.getElementById('course_model_y20')
+    let course_model_y21_element = document.getElementById('course_model_y21')
+
+    if(options_admission_year[1].selected == true){
+        course_model_y18_element.style.display = 'block';
+        course_model_y19_element.style.display = 'none';
+        course_model_y20_element.style.display = 'none';
+        course_model_y21_element.style.display = 'none';
+    }else if(options_admission_year[2].selected == true){
+        course_model_y18_element.style.display = 'none';
+        course_model_y19_element.style.display = 'block';
+        course_model_y20_element.style.display = 'none';
+        course_model_y21_element.style.display = 'none';
+    }else if(options_admission_year[3].selected == true){
+        course_model_y18_element.style.display = 'none';
+        course_model_y19_element.style.display = 'none';
+        course_model_y20_element.style.display = 'block';
+        course_model_y21_element.style.display = 'none';
+    }else if(options_admission_year[4].selected == true){
+        course_model_y18_element.style.display = 'none';
+        course_model_y19_element.style.display = 'none';
+        course_model_y20_element.style.display = 'none';
+        course_model_y21_element.style.display = 'block';
+    }
+}
+
